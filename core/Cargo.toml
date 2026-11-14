@@ -1,0 +1,19 @@
+[package]
+name = "yoink-core"
+version.workspace = true
+edition.workspace = true
+
+[features]
+default = ["fs"]
+# everything that touches the local filesystem; the browser build leaves it off
+fs = ["iroh-blobs/fs-store", "tokio/rt-multi-thread", "dep:tar", "dep:flate2"]
+
+[dependencies]
+iroh = "1.4"
+iroh-blobs = { version = "0.105", default-features = false }
+tokio = { version = "1", default-features = false, features = ["sync"] }
+anyhow = "1"
+data-encoding = "2"
+n0-future = "0.3"
+tar = { version = "0.4", optional = true }
+flate2 = { version = "1", optional = true }

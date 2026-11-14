@@ -1,0 +1,22 @@
+# Checks the CLI and shared core. Lives on the cli branch next to the workspace
+# it tests; the web branch has its own ci workflow.
+name: ci
+on:
+  push:
+    branches: [cli]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      # the branches are independent snapshots; core/ must stay identical
+      - name: warn if core/ differs from web
+        run: |
+          git fetch --no-tags --depth=1 origin web
+          git diff --stat FETCH_HEAD:core core || echo "::warning::core/ differs from web; mirror the change"
+      - run: cargo fmt --all --check
+      - run: cargo test --workspace
+      - run: cargo clippy --workspace --all-targets -- -D warnings
