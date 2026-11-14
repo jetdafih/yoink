@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>yoink · send files, no strings attached</title>
+<meta name="description" content="Peer-to-peer file transfer. No accounts, no uploads, no servers holding your files.">
+<link rel="icon" href="logo.svg">
+<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <nav>
+    <a class="brand" href="./"><img src="logo.svg" alt="">yoink</a>
+    <a class="link" href="https://github.com/jetdafih/yoink" aria-label="yoink on GitHub" title="GitHub">
+      <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+    </a>
+  </nav>
+
+  <h1>Send files straight to them.</h1>
+  <p class="lead">Peer-to-peer transfer from your terminal or your browser. No accounts, no uploads, nothing stored in between.</p>
+  <div class="row">
+    <a class="btn" href="app">Open web app</a>
+    <a class="btn ghost" href="#cli">Get the CLI</a>
+  </div>
+
+<pre><span class="c"># sender</span>
+<span class="p">$</span> yoink send photos/ notes.txt --qr
+<span class="c"># receiver, anywhere</span>
+<span class="p">$</span> yoink get <span class="c">&lt;ticket&gt;</span>
+o-o-o-o-o-. . . . .  52%  4s left</pre>
+
+  <ul class="feat">
+    <li><b>Direct</b><span>Files go from device to device, encrypted. Nobody in the middle keeps a copy.</span></li>
+    <li><b>One short ticket</b><span>Share a line of text or a QR code. Scan it with a phone and the web app opens ready to receive.</span></li>
+    <li><b>Folders and bundles</b><span>Send several files and folders at once. They travel as one compressed bundle and unpack on arrival.</span></li>
+    <li><b>CLI and browser speak the same language</b><span>Send from the terminal, receive in a tab. Or the other way around.</span></li>
+  </ul>
+
+  <h2 id="cli">Install the CLI</h2>
+  <div class="install">
+    <div class="opt">
+      <div class="opt-head"><b>Cargo</b></div>
+      <div class="cmd">
+        <code>cargo install --git https://github.com/jetdafih/yoink yoink</code>
+        <button class="copy" type="button" aria-label="Copy the Cargo command" data-copy>
+          <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5.75" y="5.75" width="7.5" height="7.5" rx="1.5"/><path d="M10.25 5.75V4.5A1.75 1.75 0 0 0 8.5 2.75h-4A1.75 1.75 0 0 0 2.75 4.5v4A1.75 1.75 0 0 0 4.5 10.25h1.25"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><b>Prebuilt</b></div>
+      <div class="cmd">
+        <code>curl -fsSL https://raw.githubusercontent.com/jetdafih/yoink/cli/install.sh | sh</code>
+        <button class="copy" type="button" aria-label="Copy the install script command" data-copy>
+          <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5.75" y="5.75" width="7.5" height="7.5" rx="1.5"/><path d="M10.25 5.75V4.5A1.75 1.75 0 0 0 8.5 2.75h-4A1.75 1.75 0 0 0 2.75 4.5v4A1.75 1.75 0 0 0 4.5 10.25h1.25"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <p class="sr" id="copied" role="status" aria-live="polite"></p>
+
+  <footer>Browser transfers go through a relay, so they are slower than CLI to CLI. Files up to 512 MB work in any browser; larger downloads stream straight to disk in Chrome and Edge. For anything huge, use the CLI.</footer>
+</main>
+<script type="module" src="widgets.js"></script>
+<script>
+const CHECK = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.25 8.5 6.25 11.5 12.75 5"/></svg>';
+const status = document.querySelector("#copied");
+
+for (const b of document.querySelectorAll("[data-copy]")) {
+  const icon = b.innerHTML;
+  const cmd = b.parentElement.querySelector("code");
+  const text = cmd.textContent.trim();
+  const label = b.getAttribute("aria-label");
+
+  b.onclick = async () => {
+    clearTimeout(b._t);
+    try {
+      await navigator.clipboard.writeText(text);
+      b.innerHTML = CHECK;
+      b.classList.add("done");
+      b.setAttribute("aria-label", "Copied");
+      status.textContent = "Copied to clipboard";
+    } catch {
+      const r = document.createRange();
+      r.selectNodeContents(cmd);
+      getSelection().removeAllRanges();
+      getSelection().addRange(r);
+      b.setAttribute("aria-label", "Press Ctrl+C to copy");
+      status.textContent = "Press Ctrl+C to copy";
+    }
+    b._t = setTimeout(() => {
+      b.innerHTML = icon;
+      b.classList.remove("done");
+      b.setAttribute("aria-label", label);
+      status.textContent = "";
+    }, 1500);
+  };
+}
+</script>
+</body>
+</html>

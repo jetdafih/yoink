@@ -1,0 +1,23 @@
+# Checks shared + web code. Lives on the web branch next to the workspace it tests.
+name: ci
+on:
+  push:
+    branches: [web]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      # the branches are independent snapshots; core/ must stay identical
+      - name: warn if core/ differs from cli
+        run: |
+          git fetch --no-tags --depth=1 origin cli
+          git diff --stat FETCH_HEAD:core core || echo "::warning::core/ differs from cli; mirror the change"
+      - run: cargo fmt --all --check
+      - run: cargo test -p yoink-core
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: rustup target add wasm32-unknown-unknown
+      - run: cargo check -p yoink-web --target wasm32-unknown-unknown

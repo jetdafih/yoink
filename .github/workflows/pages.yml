@@ -1,0 +1,32 @@
+# Deploys the web app. This workflow lives on the web branch because that is
+# where web/ and its Cargo workspace are; the cli branch is a separate snapshot.
+name: pages
+on:
+  push:
+    branches: [web]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - run: rustup target add wasm32-unknown-unknown
+      - run: cargo install wasm-bindgen-cli --locked --version "$(cargo metadata --locked --format-version 1 | jq -r '.packages[] | select(.name=="wasm-bindgen") | .version')"
+      - run: sh web/build.sh
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/www
+      - id: d
+        uses: actions/deploy-pages@v4
